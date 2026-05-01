@@ -1,0 +1,153 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap");
+@import "tailwindcss";
+
+/* ─── Design Tokens ─────────────────────────────────────────────────── */
+:root {
+  /* Brand */
+  --brand-primary: #0C4A6E;
+  --brand-accent:  #F59E0B;
+
+  /* Backgrounds */
+  --background:       #F8FAFC;
+  --background-card:  #FFFFFF;
+  --background-muted: #F1F5F9;
+
+  /* Foregrounds */
+  --foreground:       #0F172A;
+  --foreground-muted: #64748B;
+  --foreground-faint: #94A3B8;
+
+  /* Primary (interactive) */
+  --primary:            #0C4A6E;
+  --primary-hover:      #0A3D5C;
+  --primary-foreground: #F0F9FF;
+
+  /* Accent (CTA / highlight) */
+  --accent:            #F59E0B;
+  --accent-hover:      #D97706;
+  --accent-foreground: #1C1917;
+
+  /* Semantic */
+  --success:     #10B981;
+  --warning:     #F59E0B;
+  --destructive: #EF4444;
+  --info:        #3B82F6;
+
+  /* Borders & shadows */
+  --border:        #E2E8F0;
+  --border-strong: #CBD5E1;
+  --ring:          #0C4A6E;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow:    0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
+
+  /* Typography */
+  --font-display: "Plus Jakarta Sans", sans-serif;
+  --font-body:    "DM Sans", sans-serif;
+  --font-mono:    "DM Mono", monospace;
+
+  /* Radius */
+  --radius-sm: 0.25rem;
+  --radius:    0.5rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* Layout */
+  --sidebar-width: 240px;
+  --header-height: 56px;
+}
+
+/* ─── Tailwind v4 theme mapping ──────────────────────────────────────── */
+@theme inline {
+  --color-background:       var(--background);
+  --color-background-card:  var(--background-card);
+  --color-background-muted: var(--background-muted);
+
+  --color-foreground:       var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-faint: var(--foreground-faint);
+
+  --color-primary:            var(--primary);
+  --color-primary-hover:      var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-accent:            var(--accent);
+  --color-accent-hover:      var(--accent-hover);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-success:     var(--success);
+  --color-warning:     var(--warning);
+  --color-destructive: var(--destructive);
+  --color-info:        var(--info);
+
+  --color-border:        var(--border);
+  --color-border-strong: var(--border-strong);
+
+  --font-display: var(--font-display);
+  --font-body:    var(--font-body);
+  --font-mono:    var(--font-mono);
+  --font-sans:    var(--font-body);
+
+  --radius-sm: var(--radius-sm);
+  --radius:    var(--radius);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+}
+
+/* ─── Base styles ────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+/* Numeric data: use mono for prices and counts */
+.tabular-nums {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Focus ring ─────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: var(--border-strong); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--foreground-faint); }
+
+/* ─── Status badge utilities ─────────────────────────────────────────── */
+.badge-draft    { background: var(--background-muted); color: var(--foreground-muted); }
+.badge-sent     { background: #EFF6FF; color: #1D4ED8; }
+.badge-answered { background: #F0FDF4; color: #15803D; }
+.badge-pending  { background: #FFFBEB; color: #92400E; }
+.badge-closed   { background: var(--background-muted); color: var(--foreground-faint); }
+.badge-overdue  { background: #FEF2F2; color: #B91C1C; }

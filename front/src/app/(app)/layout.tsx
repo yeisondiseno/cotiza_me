@@ -1,4 +1,4 @@
-import { Sidebar } from "@/components/layout/sidebar"
+import { Sidebar } from "@/components/organisms/sidebar"
 
 export default function AppLayout({
   children,

@@ -1,7 +1,7 @@
-import { Header } from "@/components/layout/header"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Header } from "@/components/organisms/header"
+import { Button } from "@/components/atoms/button"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/molecules/card"
+import { Badge } from "@/components/atoms/badge"
 import {
   FileText,
   Users,

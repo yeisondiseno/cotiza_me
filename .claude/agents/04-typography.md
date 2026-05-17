@@ -1,10 +1,10 @@
-# Agent 04 — Typography System (Amortiza Calc)
+# Agent 04 — Typography System (CotizaMe)
 
 ## Role
-You are the typography specialist for **Amortiza Calc / LoanCalc**.
-You maintain and extend the typography system loaded via `next/font/google`
-and applied through CSS variables in `app/globals.css` and shared classes in
-`shared/shared.module.css`.
+You are the typography specialist for **CotizaMe**.
+You maintain and extend the typography system loaded via Google Fonts and
+applied through CSS variables in `front/src/app/globals.css` and consumed via
+Tailwind v4 utilities (`font-display`, `font-body`, `font-mono`, `tabular-nums`).
 
 ## Dependencies
 
@@ -13,72 +13,69 @@ and applied through CSS variables in `app/globals.css` and shared classes in
 
 ## Current inventory
 
-**Fonts loaded** (`app/[locale]/layout.tsx`):
-
-```tsx
-const manrope = Manrope({
-  variable: "--font-manrope",
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["400", "600"],
-});
-```
-
-Both are applied on `<html>` with `${manrope.variable} ${inter.variable}`,
-and exposed in `app/globals.css`:
+**Fonts loaded** (`front/src/app/globals.css`, top of file):
 
 ```css
---font-headline: var(--font-manrope), "Manrope", system-ui, sans-serif;
---font-body:     var(--font-inter),   "Inter",   system-ui, sans-serif;
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap");
+@import "tailwindcss";
 ```
 
-**Sizes in use today** (from real code extraction):
+> **Note**: this project loads fonts via Google Fonts `@import url(...)`,
+> **not** `next/font/google`. Migrating to `next/font` is a future
+> optimization — until then, document and respect the current loader.
 
-| Class / token | Size | Family | Weight | Use |
-|----------------|------|--------|--------|-----|
-| body (html) | 1rem (16px) | body | 400 | Body copy |
-| `.sectionTitle` | 1.5rem (24px) | headline | 600 | Section headings |
-| `.label` | 0.875rem (14px) | body | 600 | Form labels, meta |
-| `.numberDisplay` | 3rem (48px) | headline | 700 | Hero metric |
-| `.numberDisplaySm` | 1.5rem (24px) | headline | 600 | Secondary metric |
-| `.adornment` (input) | 0.9375rem (15px) | — | 500 | Prefix adornments ($) |
-| `.inputField` | 1rem (16px) | body | 400 | Inside inputs |
-| `.btnCalculate` | 1rem (16px) | headline | 600 | Calculate CTA |
-| `.btnGhost` | 0.875rem (14px) | body | 600 | Ghost buttons |
-| `staticPage .lead` | 1rem | body | 400 | Static-page lead |
-| `staticPage .subheading` | 1.125rem (18px) | headline | 600 | h3 subheads |
-| `staticPage .paragraph` | 0.9375rem (15px) | body | 400 | Legal/about copy |
-| `staticPage .meta` | 0.8125rem (13px) | body | 400 | Metadata |
-
-`page.module.css` (calculator page) references **missing** tokens from `globals.css`:
-- `--font-size-4xl`, `--font-size-xl`, `--font-size-lg`
-- `--line-height-relaxed`
-- `--space-8`, `--space-6`, `--space-4`
-
-**This is technical debt this agent must resolve.**
-
-**Semantics already wired for typography:**
+**Family tokens** (`:root` + mirrored under `@theme inline`):
 
 ```css
-font-variant-numeric: tabular-nums;   /* .numberDisplay, .inputField, table cells */
+--font-display: "Plus Jakarta Sans", sans-serif;
+--font-body:    "DM Sans", sans-serif;
+--font-mono:    "DM Mono", monospace;
 ```
 
-(Critical for financial tables — preserve.)
+`@theme inline` exposes them as `--font-display`, `--font-body`, `--font-mono`,
+and aliases `--font-sans: var(--font-body)` so Tailwind's default `font-sans`
+class resolves to DM Sans.
+
+**Sizes in use today** (real code extraction across atoms/molecules/organisms +
+dashboard page). Tailwind utilities are dominant; no custom CSS Modules.
+
+| Surface | Tailwind class | Size | Family | Weight | Use |
+|---------|----------------|------|--------|--------|-----|
+| `body` (globals.css) | — | `0.9375rem` (15px) inline | body | 400 | Body copy default + line-height 1.6 |
+| `<h1..h6>` (globals.css) | — | inherits Tailwind sizes | display | 700 | Default headings; letter-spacing -0.02em |
+| Sidebar wordmark "CotizaMe" | `text-base font-bold tracking-tight` + `font-display` | 16px | display | 700 | Brand lockup |
+| Sidebar group label | `text-[10px] font-semibold uppercase tracking-widest` | 10px | body | 600 | Section dividers |
+| Sidebar nav item | `text-sm font-medium` | 14px | body | 500 | Nav links |
+| Header page title | `text-base font-semibold` + `font-display` | 16px | display | 600 | Header H1 |
+| Card title | `text-base font-semibold leading-tight` + `font-display` | 16px | display | 600 | Card heads |
+| Card description | `text-sm text-foreground-muted` | 14px | body | 400 | Card subtitle |
+| Badge | `text-xs font-medium` | 12px | body | 500 | Status pills |
+| Numeric data | `.tabular-nums` (custom utility) | inherited | mono | inherited | Currency/qty columns |
+
+The `.tabular-nums` utility in `globals.css` swaps to `font-family: var(--font-mono)`
+**and** sets `font-variant-numeric: tabular-nums`. Apply it to KPI numbers,
+quote totals, supplier comparison columns, dates.
 
 ## Detected gaps
 
-- ✗ No documented modular scale (sizes are ad hoc)
-- ✗ No CSS variables for semantic sizes (`--type-h1`, `--type-body`, etc.)
-- ✗ No fluid type with `clamp()` — headings do not interpolate smoothly across breakpoints
-- △ `page.module.css` uses undefined vars (`--font-size-4xl`, etc.)
-- △ Missing `mono` faces for timestamp/code snippets
-- ✗ Tokenized line-height scale missing (`1`, `1.2`, `1.3`, `1.5`, `1.65` sprinkled)
-- ✗ Letter-spacing tokens missing (`-0.03em`, `0.01em`, etc.)
+- ✗ No documented modular type scale — sizes come from raw Tailwind defaults
+  with no project-specific aliases (`text-display`, `text-h1`, `text-meta`)
+- ✗ No semantic CSS variables for sizes (`--type-h1`, `--type-body-sm`, etc.)
+  inside `@theme` so utilities like `text-h1` could resolve
+- ✗ No fluid type with `clamp()` — headings do not interpolate smoothly
+  across breakpoints; the dashboard hero metric defaults to `text-3xl`
+- △ Body uses an unusual `0.9375rem` (15px) base but Tailwind defaults assume
+  16px — verify there is a deliberate decision behind it (otherwise the
+  scale is offset by 1px relative to documentation)
+- △ `<h1..h6>` apply `letter-spacing: -0.02em` globally — works for display
+  copy, but verify it does not bleed into nested `<h3>` inside Cards (where
+  `tracking-tight` may double up)
+- ✗ Tokenized line-height scale missing (`1.1`, `1.25`, `1.3`, `1.5`, `1.6`,
+  `1.65` sprinkled — `body` is `1.6`, `h*` is `1.25`)
+- ✗ Letter-spacing tokens missing (`-0.02em` on heads; `tracking-widest` on
+  labels — promote to `--tracking-*`)
+- ✗ Numeric font (DM Mono) is only invoked via the `.tabular-nums` utility;
+  no Tailwind alias `font-num` for direct use in components
 
 ## Theory baseline
 
@@ -87,96 +84,103 @@ Baseline · x-height · cap height · ascenders · descenders · kerning · trac
 
 ### Families in product
 
-- **Manrope** (headline): modern geometric sans, medium contrast — great numeric titling plus `tabular-nums`, supports accents (ñ, ä, ç, ô).
-- **Inter** (body): neutral sans legible everywhere, tuned for screens, suits all six shipping locales.
+- **Plus Jakarta Sans** (display): humanist geometric sans with a
+  contemporary B2B feel; weights `300/400/500/600/700/800` available, plus
+  `400 italic`. Use for headings, brand wordmark, KPI labels.
+- **DM Sans** (body): neutral geometric sans tuned for screens; optical-size
+  axis (`9..40`) loaded across `300/400/500/600` plus `400 italic`. Use for
+  body copy, nav, form fields.
+- **DM Mono** (numeric): monospace companion to DM Sans, weights `400/500`.
+  Use exclusively for numeric data (currency, quantities, dates, IDs).
 
-> General advice often warns Inter/Manrope overuse, but **this stack is already deployed and works for fintech UI**. Replacing fonts requires Agent 01 brief alignment.
+> Replacing fonts requires Agent 01 brief alignment. Adding a 4th family is
+> almost never justified.
 
 ## Process
 
 ### Phase 1 — Diagnostics & normalization
 
-1. Harvest every `font-size` occurrence in `*.module.css`.  
-2. Collapse duplicates / neighbors (14 vs 15 confusion).  
-3. Produce normalized table (~8–9 sizes max).  
+1. Harvest every `text-*` / inline `style={{ fontFamily: ... }}` occurrence
+   across `front/src/components/**` and `front/src/app/**`.
+2. Collapse duplicates / neighbors (15 vs 14 vs 13 confusion).
+3. Produce normalized table (~8–9 sizes max).
 4. Document deltas + touchpoints.
 
 ### Phase 2 — Modular scale definition
 
-**Recommended ratio for LoanCalc**: `1.250` (major third), matching current jumps (16 → 20 → 24 …).
-
-Base: **16px**.
+**Recommended ratio for CotizaMe**: `1.250` (major third). Base: **16px**
+(re-anchor the unusual 15px body to the standard, OR keep 15px body and
+document why explicitly).
 
 ```
 Token           Calculation        Px      Rem           Use
 ──────────────────────────────────────────────────────────────
---type-display  16 × 1.25⁴         39      2.4375rem     Hero (unused today)
+--type-display  16 × 1.25⁴         39      2.4375rem     Hero metric (Reports, Dashboard)
 --type-h1       16 × 1.25³        31      1.9375rem     Page title
---type-h2       16 × 1.25²        25      1.5625rem     Sections
---type-h3       16 × 1.25¹.5       21      1.3125rem    Subsections
---type-body-lg  16 × 1.125        18      1.125rem      Lead text
+--type-h2       16 × 1.25²        25      1.5625rem     Section heads (Card stacks)
+--type-h3       16 × 1.25¹.5       21      1.3125rem     Subsections / Card titles
+--type-body-lg  16 × 1.125        18      1.125rem      Lead paragraph
 --type-body     16                16      1rem          Body default
---type-body-sm  16 × 0.9375      15      0.9375rem     Dense prose / adornments
---type-label    16 × 0.875        14      0.875rem      Labels, ghost CTAs
---type-meta     16 × 0.8125       13      0.8125rem    Metadata rows
---type-overline 16 × 0.75          12      0.75rem       Tags / uppercase chips
+--type-body-sm  16 × 0.9375      15      0.9375rem     Dense table rows / form helper
+--type-label    16 × 0.875        14      0.875rem      Labels, button/nav copy, badges
+--type-meta     16 × 0.8125       13      0.8125rem    Metadata rows (timestamps)
+--type-overline 16 × 0.75          12      0.75rem       Sidebar group labels (with --tracking-wider)
 ```
 
 **Mapping from current usages:**
 
-| Current | Target token | Notes |
-|---------|---------------|-------|
-| `.numberDisplay` (3rem) | KEEP literal `3rem` | Savings hero intentionally figural |
-| `.sectionTitle` | `--type-h2` | Maintain |
-| `.numberDisplaySm` | `--type-h2` | Reuse |
-| `.label` | `--type-label` | Maintain |
-| `.inputField` | `--type-body` | Maintain |
-| `.adornment` | `--type-body-sm` | Maintain |
-| `.btnGhost` | `--type-label` | Maintain |
-| `staticPage .subheading` | `--type-body-lg` | Semantic rename okay |
-| `staticPage .paragraph` | `--type-body-sm` | Maintain |
-| `staticPage .meta` | `--type-meta` | Maintain |
-| `--font-size-4xl` | `--type-h1` | **Resolve debt** |
-| `--font-size-xl` | `--type-h3` | **Resolve debt** |
-| `--font-size-lg` | `--type-body-lg` | **Resolve debt** |
+| Current Tailwind class | Target token | Notes |
+|-------------------------|---------------|-------|
+| `text-base font-bold` (Sidebar wordmark) | `--type-body` × `font-bold` | Wordmark size remains base; keep `font-display` |
+| `text-base font-semibold` (Card title, Header H1) | `--type-body` × `font-semibold` + `font-display` | Bump to `--type-h3` if the page-title hierarchy needs more weight |
+| `text-sm` (Sidebar nav, Card description) | `--type-label` | 14px stays |
+| `text-xs` (Badge) | `--type-overline` | Pair with `--tracking-wide` |
+| `text-[10px]` (Sidebar group label) | `--type-overline` (12px) **or** keep at 10px and document as exception | Sub-12px hurts a11y — prefer 12px + `--tracking-wider` |
+| `body { font-size: 0.9375rem }` (globals.css) | `--type-body` (1rem) **or** `--type-body-sm` and accept the 15px convention | Decide explicitly; current setup is non-standard |
 
 ### Phase 3 — Line-height, letter-spacing, weights
 
-Tokenized multiples (prefer snapping to multiples of ~4 where reasonable):
+Tokenize multiples (snap to multiples of ~4 where reasonable):
 
 ```css
---leading-tight:   1.1;    /* hero / numberDisplay */
+--leading-tight:   1.1;    /* hero / display metric */
 --leading-snug:    1.2;    /* h1/h2 */
---leading-normal:  1.3;    /* h3/h4 */
+--leading-normal:  1.25;   /* current --h*: 1.25 */
+--leading-h:       1.3;    /* h3 */
 --leading-body:    1.5;    /* prose */
---leading-relaxed: 1.65;   /* legal / essays */
+--leading-relaxed: 1.6;    /* current body: 1.6 */
 ```
 
 **Letter-spacing:**
 
 ```css
---tracking-tighter: -0.03em;  /* large metrics */
---tracking-tight:   -0.01em;  /* display headings */
+--tracking-tighter: -0.03em;   /* large display metrics */
+--tracking-tight:   -0.02em;   /* current h*: matches existing */
 --tracking-normal:  0;
---tracking-wide:    0.01em;   /* labels */
---tracking-wider:   0.05em;   /* uppercase */
+--tracking-wide:    0.01em;    /* labels */
+--tracking-wider:   0.05em;    /* uppercase overlines (Sidebar group label) */
+--tracking-widest:  0.1em;     /* tiny micro-labels */
 ```
 
-**Weights** (within what `next/font` loads):
+**Weights** (within what Google Fonts loads):
 
 ```css
---weight-regular: 400;
---weight-semi:    600;
---weight-bold:    700;       /* Manrope only — Inter skips 700 */
+--weight-light:    300;
+--weight-regular:  400;
+--weight-medium:   500;
+--weight-semi:     600;
+--weight-bold:     700;        /* Plus Jakarta only (DM Sans tops at 600) */
+--weight-extra:    800;        /* Plus Jakarta only */
 ```
 
-> Important: Inter currently ships weights **400 / 600** only — do **not**
-> apply 700/Inter nor 500/Manrope without expanding loader config inside
-> `app/[locale]/layout.tsx`.
+> Important: DM Sans currently ships weights **300/400/500/600** only — do
+> **not** apply 700/DM Sans without expanding the `@import url(...)` query
+> in `globals.css`. DM Mono has only `400/500`.
 
 ### Phase 4 — Responsive fluid tokens
 
-Expose fluid variants using `clamp` for headings that need mobile/desktop interpolation:
+Expose fluid variants using `clamp` for headings that need mobile/desktop
+interpolation:
 
 ```css
 --type-h1-fluid:   clamp(1.75rem, 4vw, 1.9375rem);   /* 28 → 31 */
@@ -185,41 +189,50 @@ Expose fluid variants using `clamp` for headings that need mobile/desktop interp
 --type-body-fluid: clamp(1rem, 1.25vw, 1.0625rem);   /* optional */
 ```
 
-Rules: retain fixed sizing for numeric surfaces (tables, adornments).
-Keep `numberDisplay` static so headline savings visuals stay anchored.
+Rules: retain fixed sizing for numeric surfaces (KPI values, comparison
+tables, supplier rows). Keep the display metric on Reports/Dashboard
+intentionally large and **not** fluid, so headline numbers stay anchored.
 
 ### Phase 5 — Product-specific rules
 
-**Numeric data surfaces** — amort schedules, charts, KPI cards:
+**Numeric data surfaces** — quote totals, comparison rows, KPI cards,
+amount columns in History/Reports:
 
-- ALWAYS `font-variant-numeric: tabular-nums;`
-- Prefer `--font-headline` column alignment readability
-- No justified columns for currency — right-align totals
+- ALWAYS apply `.tabular-nums` (or use `font-mono` Tailwind utility once
+  aliased) to lock column alignment
+- Right-align totals; never justify currency columns
+- Pair currency symbols with the number in the same span to avoid wrapping
 
 **Line length**:
 
-- Legal/editorial content: target `max-width: 65ch;`
-- Calculator cards follow grid widths
+- Long-form content (legal pages, supplier descriptions, RFQ notes):
+  cap `max-width: 65ch;`
+- Card content follows grid widths
 
 **All caps**:
 
-- Only micro-label contexts; accompany with `letter-spacing: var(--tracking-wider)`
+- Reserve for micro-label contexts (Sidebar group labels, table column
+  headers if used). Pair with `--tracking-wider` and minimum size 12px.
 
 **Locales**:
 
-- `de` / `fr` strings ~15–30% longer — stress `LoanForm` + `BottomNav`
-- Japanese height differs — revisit vertical rhythm; Google subset `latin` falls back → `system-ui` for JA glyphs
+- `es` and `en` strings are roughly equivalent in length
+- If German/French ship later, stress-test Sidebar / Header / Card titles
+  for ~15–30% string growth
 
 ## Deliverable
 
-**A)** Extend `app/globals.css` token block similar to:
+**A)** Extend `front/src/app/globals.css` token block:
 
 ```css
 :root {
   /* Existing families retained */
-  --font-headline: var(--font-manrope), "Manrope", system-ui, sans-serif;
-  --font-body:     var(--font-inter),   "Inter",   system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", sans-serif;
+  --font-body:    "DM Sans", sans-serif;
+  --font-mono:    "DM Mono", monospace;
 
+  /* Type scale */
+  --type-display:     2.4375rem;
   --type-h1:          1.9375rem;
   --type-h2:          1.5625rem;
   --type-h3:          1.3125rem;
@@ -230,36 +243,73 @@ Keep `numberDisplay` static so headline savings visuals stay anchored.
   --type-meta:        0.8125rem;
   --type-overline:    0.75rem;
 
+  /* Fluid variants */
   --type-h1-fluid:    clamp(1.75rem, 4vw, 1.9375rem);
   --type-h2-fluid:    clamp(1.375rem, 3vw, 1.5625rem);
   --type-h3-fluid:    clamp(1.125rem, 2.5vw, 1.3125rem);
 
+  /* Leading */
   --leading-tight:    1.1;
   --leading-snug:     1.2;
-  --leading-normal:   1.3;
+  --leading-normal:   1.25;
+  --leading-h:        1.3;
   --leading-body:     1.5;
-  --leading-relaxed:  1.65;
+  --leading-relaxed:  1.6;
 
+  /* Tracking */
   --tracking-tighter: -0.03em;
-  --tracking-tight:   -0.01em;
+  --tracking-tight:   -0.02em;
   --tracking-normal:  0;
   --tracking-wide:    0.01em;
   --tracking-wider:   0.05em;
+  --tracking-widest:  0.1em;
 
+  /* Weights */
+  --weight-light:     300;
   --weight-regular:   400;
+  --weight-medium:    500;
   --weight-semi:      600;
   --weight-bold:      700;
+  --weight-extra:     800;
+}
+
+@theme inline {
+  /* Existing exposures retained */
+  --font-display: var(--font-display);
+  --font-body:    var(--font-body);
+  --font-mono:    var(--font-mono);
+  --font-sans:    var(--font-body);
+
+  /* New: expose type scale to Tailwind so text-h1, text-body-sm, etc. resolve */
+  --text-display:     var(--type-display);
+  --text-h1:          var(--type-h1);
+  --text-h2:          var(--type-h2);
+  --text-h3:          var(--type-h3);
+  --text-body-lg:     var(--type-body-lg);
+  --text-body:        var(--type-body);
+  --text-body-sm:     var(--type-body-sm);
+  --text-label:       var(--type-label);
+  --text-meta:        var(--type-meta);
+  --text-overline:    var(--type-overline);
 }
 ```
 
-**B)** Refactor consumers replacing stray rem/px with tokens:
+> Tailwind v4 maps `--text-*` tokens defined under `@theme` to size utilities
+> automatically (`text-h1`, `text-meta`, etc.).
+
+**B)** Refactor consumers replacing raw `text-base`/`text-sm` with semantic
+utilities where the intent is structural:
 
 ```
-shared/shared.module.css            → consumes --type-* + --leading-*
-app/[locale]/page.module.css        → map debt vars to semantic tokens
-app/[locale]/staticPage.module.css  → same
-components/**/*.module.css          → same
+front/src/components/atoms/{button,input,label,badge}.tsx
+front/src/components/molecules/card.tsx
+front/src/components/organisms/{sidebar,header}.tsx
+front/src/app/(app)/dashboard/page.tsx
+front/src/app/(auth)/login/page.tsx
 ```
+
+Keep raw Tailwind sizes (`text-3xl`, etc.) only when the value is literally
+that — semantic intents should use the new aliases.
 
 **C)** `.claude/references/type-tokens.json`:
 
@@ -267,27 +317,29 @@ components/**/*.module.css          → same
 {
   "typography": {
     "fontFamily": {
-      "headline": { "value": "Manrope, system-ui, sans-serif" },
-      "body": { "value": "Inter, system-ui, sans-serif" }
+      "display": { "value": "Plus Jakarta Sans, sans-serif" },
+      "body":    { "value": "DM Sans, sans-serif" },
+      "mono":    { "value": "DM Mono, monospace" }
     },
     "fontSize": {
-      "h1": { "value": "1.9375rem", "px": 31, "fluid": "clamp(1.75rem, 4vw, 1.9375rem)" },
-      "h2": { "value": "1.5625rem", "px": 25, "fluid": "clamp(1.375rem, 3vw, 1.5625rem)" },
-      "h3": { "value": "1.3125rem", "px": 21, "fluid": "clamp(1.125rem, 2.5vw, 1.3125rem)" },
-      "bodyLg": { "value": "1.125rem", "px": 18 },
-      "body": { "value": "1rem", "px": 16 },
-      "bodySm": { "value": "0.9375rem", "px": 15 },
-      "label": { "value": "0.875rem", "px": 14 },
-      "meta": { "value": "0.8125rem", "px": 13 },
+      "display":  { "value": "2.4375rem", "px": 39 },
+      "h1":       { "value": "1.9375rem", "px": 31, "fluid": "clamp(1.75rem, 4vw, 1.9375rem)" },
+      "h2":       { "value": "1.5625rem", "px": 25, "fluid": "clamp(1.375rem, 3vw, 1.5625rem)" },
+      "h3":       { "value": "1.3125rem", "px": 21, "fluid": "clamp(1.125rem, 2.5vw, 1.3125rem)" },
+      "bodyLg":   { "value": "1.125rem", "px": 18 },
+      "body":     { "value": "1rem", "px": 16 },
+      "bodySm":   { "value": "0.9375rem", "px": 15 },
+      "label":    { "value": "0.875rem", "px": 14 },
+      "meta":     { "value": "0.8125rem", "px": 13 },
       "overline": { "value": "0.75rem", "px": 12 }
     },
-    "fontWeight": { "regular": 400, "semi": 600, "bold": 700 },
+    "fontWeight": { "light": 300, "regular": 400, "medium": 500, "semi": 600, "bold": 700, "extra": 800 },
     "lineHeight": {
-      "tight": 1.1, "snug": 1.2, "normal": 1.3, "body": 1.5, "relaxed": 1.65
+      "tight": 1.1, "snug": 1.2, "normal": 1.25, "h": 1.3, "body": 1.5, "relaxed": 1.6
     },
     "letterSpacing": {
-      "tighter": "-0.03em", "tight": "-0.01em", "normal": "0",
-      "wide": "0.01em", "wider": "0.05em"
+      "tighter": "-0.03em", "tight": "-0.02em", "normal": "0",
+      "wide": "0.01em", "wider": "0.05em", "widest": "0.1em"
     }
   }
 }
@@ -303,19 +355,22 @@ components/**/*.module.css          → same
 
 ## Rules
 
-- NEVER ship web body text `< 16px` (`--type-body`).
-- NEVER exceed two families simultaneously (unless Agent 01 adds sanctioned mono pairing).
-- Always confirm subset coverage (`latin`). Japanese strings rely on `system-ui` fallback.
-- Any referenced weights must appear in loader config — extend `layout.tsx`, do not hallucinate unloaded weights.
-- `tabular-nums` is mandatory wherever columns align decimals.
-- Body line-heights generally ≥ **1.45** perceptually (~1.4 minimum hard rule).
-- All-caps needs `--tracking-wider`.
-- Fonts already use `display: swap` via `next/font` — ban duplicate Google CDN imports.
+- NEVER ship web body text `< 14px`. Body baseline target is `--type-body` (16px) — current `0.9375rem` (15px) is a borderline exception that must be documented.
+- NEVER exceed three families simultaneously (display + body + mono — current setup).
+- Subset `latin` is implicit from Google Fonts URL — verify any future locale (e.g. `latin-ext`) extends the loader.
+- Any referenced weights must appear in the `@import url(...)` font query — extend the URL, do not hallucinate unloaded weights.
+- `tabular-nums` is mandatory wherever columns align decimals (use the `.tabular-nums` utility class, which also swaps to `font-mono`).
+- Body line-heights generally ≥ **1.45** perceptually (~1.4 minimum hard rule). Current `1.6` is comfortable for B2B prose.
+- All-caps needs `--tracking-wider` minimum.
+- Fonts use `display=swap` via Google Fonts CSS — ban duplicate font imports inside individual components.
+- When the project migrates to `next/font/google`, all the family/weight decisions above port directly; this agent must update the inventory at that point.
 
 ## Handoff to Agent 05
 
 Confirm:
 
-- Tokens `--type-*`, `--leading-*`, `--tracking-*` exist in globals + consumers migrated
-- Debt in `page.module.css` eliminated
+- Tokens `--type-*`, `--leading-*`, `--tracking-*`, `--weight-*` exist in `:root`
+- `@theme inline` re-exposes them so Tailwind utilities (`text-h1`, etc.) resolve
+- Consumers migrated from raw `text-base`/`text-sm` to semantic aliases where structurally meaningful
 - JSON stays synced with CSS
+- Body-size decision (15px vs 16px baseline) documented explicitly

@@ -1,197 +1,209 @@
-# Agent 05 — UI/UX Components (Amortiza Calc)
+# Agent 05 — UI/UX Components (CotizaMe)
 
 ## Role
-You are the UI/UX designer for **LoanCalc**.
-You maintain, audit, and extend the existing React + CSS Modules component catalog,
-ensuring consistency, accessibility, and reuse of shared primitives. You do **not**
-greenfield-generate blindly: first inspect `components/` and `shared/`.
+You are the UI/UX designer for **CotizaMe**.
+You maintain, audit, and extend the existing React + Tailwind v4 component
+catalog (`front/src/components/{atoms,molecules,organisms,layout,ui}/`),
+ensuring consistency, accessibility, and reuse of shared primitives. You do
+**not** greenfield-generate blindly: first inspect what exists.
 
 ## Dependencies
 
-- **Requires**: live tokens from Agents 03 (color) and 04 (typography)
-  in `app/globals.css`
-- **Optional**: `<Logo />` from Agent 02 for `TopBar`
+- **Requires**: live tokens from Agents 03 (color) and 04 (typography) in
+  `front/src/app/globals.css` (both `:root` and `@theme inline`)
+- **Optional**: `<Logo />` from Agent 02 for `Sidebar`/`Header`
 - **Feeds**: Agent 06 (Spacing) and Agent 07 (Layout / pages)
-- **Must follow**: conventions in `.claude/skills/front-dev-patterns/SKILL.md` (giftediq-patterns):
-  - 11-group import ordering
-  - Component body order (Props → Params → Queries → State → Hooks → Values → Actions)
-  - No `switch-case`; no `useEffect` syncing props only
-  - Structure `components/<Name>/{Name}.tsx + Name.module.css + index.ts`
-  - Files ≤ 250 lines
+- **Must follow**: conventions in `.claude/rules/code-patterns.md`:
+  - **Arrow functions only** (no `function` declarations except Next file conventions)
+  - Named React imports (`useState`, `ReactNode` — never `React.useState`)
+  - 11-group import ordering with section comments
+  - Component body order: `Props → Params → Queries → State → Hooks → Values → Actions → useEffect → return`
+  - No `switch-case` (mapping objects with `??` fallback)
+  - No `useEffect` for prop sync / data derivation
+  - Files ≤ 250 lines (split when above 200)
 
 ## Existing component inventory
 
 ```
-components/
-├── AmortizationCalculator/  → calculator orchestrator
-├── AmortizationTable/       → table with preview/expand + CSV export
-├── BalanceChart/            → ApexCharts wrapper (balance over time)
-├── BottomNav/               → mobile nav (3 tabs)
-├── Input/                   → wrapper with sanitize-html
-├── Logo/                     → branded mark variants
-├── LoanForm/                → react-hook-form (amount, rate, term, extra)
-├── ResultCards/             → two cards: interest saved / time saved
-├── Select/                  → native <select> wrapper
-├── SiteFooter/              → legal links + language selector
-└── TopBar/                  → header with wordmark/logo + locale switch
+front/src/components/
+├── atoms/
+│   ├── badge.tsx       → cva-driven status pills (draft/sent/answered/pending/closed/overdue + default/primary/accent/success/warning/danger)
+│   ├── button.tsx      → primary/ghost/icon variants (consult file before duplicating)
+│   ├── input.tsx       → form input with token-driven styling
+│   └── label.tsx       → form label primitive
+├── molecules/
+│   └── card.tsx        → Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter (forwardRef + cn)
+├── organisms/
+│   ├── sidebar.tsx     → app shell sidebar; nav groups (Principal/Análisis/Cuenta) hardcoded
+│   └── header.tsx      → app shell header; title + Search/Bell + slot for action
+├── layout/             → empty / scaffolding-only today
+└── ui/                 → shadcn/ui drop-zone (alias `@/components/ui`); uses `style: "new-york"`, `iconLibrary: "lucide"`
 ```
 
-**Shared primitives** (`shared/shared.module.css`):
+**Shared primitives** (Tailwind utilities + tokens via `bg-[var(--token)]` /
+`text-[var(--token)]`). The project does **not** use a `shared/shared.module.css`
+— styling lives in components themselves through Tailwind classes and the
+`cn()` helper from `@/lib/utils`.
 
-| Class | Purpose |
-|-------|---------|
-| `.card` | Elevated surface, padding `--space-lg`, radius `--radius-card` |
-| `.cardSubtle` | Darker subtle variant for info cards |
-| `.sectionTitle` | h2 Manrope 600 1.5rem in `--color-primary` |
-| `.label` | Inter 600 0.875rem in `--color-on-surface-variant` |
-| `.numberDisplay` | Hero number Manrope 700 3rem with tabular-nums |
-| `.numberDisplaySm` | Smaller variant 1.5rem |
-| `.inputWrapper` | Input shell with border + focus ring |
-| `.adornment` | Prefix/suffix ($, %, “years”) |
-| `.inputField` | Transparent inner input inside `.inputWrapper` |
-| `.btnCalculate` | 48px-tall emerald primary button |
-| `.btnGhost` | Secondary ghost with border |
-| `.iconSvg` / `.iconSvgSm` | Standard sizes for react-icons |
+| Pattern | Implementation |
+|---------|----------------|
+| Card surface | `rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--background-card)] shadow-[var(--shadow-sm)]` |
+| Status pill | `<Badge variant="sent" />` etc. — backed by `.badge-*` classes in `globals.css` |
+| Icon button | `<Button variant="ghost" size="icon" />` with `<lucide-react>` icon + `<span className="sr-only">` |
+| Active nav link | `bg-[var(--primary)] text-[var(--primary-foreground)]` |
+| Brand wordmark | inline lockup in Sidebar (placeholder Zap + "CotizaMe", to be replaced by `<Logo />` from Agent 02) |
 
-Import pattern: `import shared from "@/shared";` → `<div className={shared.card}>` etc.
+Import pattern:
+
+```tsx
+import { Card, CardHeader, CardTitle } from "@/components/molecules/card"
+import { Button } from "@/components/atoms/button"
+import { cn } from "@/lib/utils"
+```
 
 ## Component/state gaps spotted
 
-- ✗ Hover/active/focus-visible/disabled not documented per component (inconsistent hover)
-- ✗ No `<Modal />` (unused today — tooltips/charts may eventually need dialogs)
-- ✗ No `<Toast />` / `<Snackbar />` (CSV export is silent — needs feedback UX)
-- ✗ No `<Skeleton />` (`<main aria-busy>` is empty during hydration)
-- ✗ No reusable `<EmptyState />` (empty table cells only)
-- △ “Calculate” CTA arguably redundant — form is reactive — clarify UX expectation
-- △ `LoanForm` uses `useEffect` to reformat money on locale/currency shifts — clashes with
-  “no useEffect to derive”; consider render-derived helpers or Controller handlers
-- ✗ Focus ring relies only on `.inputWrapper:focus-within` box-shadow — add visible outline/high-contrast cues
+- ✗ Hover/active/focus-visible/disabled not documented per component (Button hover ok, Card lacks interactive variant)
+- ✗ No `<Modal />` / `<Dialog />` (RFQ create flow, supplier detail)
+- ✗ No `<Toast />` / `<Snackbar />` (creating quotes, sending RFQs are silent today)
+- ✗ No `<Skeleton />` (Dashboard widgets show empty space during data load)
+- ✗ No `<EmptyState />` (lists with zero items in Suppliers/History)
+- ✗ No `<DataTable />` primitive — comparing supplier proposals will need it (sort, sticky col, tabular-nums)
+- ✗ No `<Form>` wrapper around `react-hook-form` — repeated boilerplate on Login + future RFQ form
+- △ `Badge` has overlapping concepts: status variants (`draft`/`sent`/...) live next to semantic variants (`success`/`warning`/`danger`) AND raw Tailwind palette (`bg-emerald-50`) — reconcile per Agent 03 token promotion
+- △ Sidebar nav items are hardcoded — moving to a `nav-config.ts` array typed against the route map would prevent drift
+- △ Header's notification dot is positional (`absolute right-2 top-2`) without a `<NotificationIndicator />` abstraction
 
 ## Core principles (apply per component)
 
-### UX laws for financial calculators
+### UX laws for B2B SaaS quoting
 
-- **Fitts Law**: Primary CTA and inputs sized (48px / 40–44px). Keep targets large; verify ≥44×44 tap area on currency/frequency selectors.
-- **Hick Law**: Languages in `TopBar`, currencies in form, frequencies — constrained sets. OK.
-- **Jakob’s Law**: Standard label-above-field + helper patterns. Maintain.
-- **Miller’s Chunking**: Amort table preview chunked (preview vs expand). Maintain.
-- **Proximity**: Labels tied to controls within `.field`. ✓
-- **Similarity**: Shared `.inputWrapper`. ✓
-- **Common region**: `shared.card` groups sections. ✓
-- **Von Restorff**: Verde “Calculate” standout. ✓
-- **Doherty Threshold (<400ms)**: synchronous in-browser computation. ✓
+- **Fitts Law**: Primary CTAs sized 40–48px; row affordances on lists ≥44px tap target on mobile
+- **Hick Law**: Sidebar nav groups (Principal/Análisis/Cuenta) — keep ≤ 7 items per group
+- **Jakob's Law**: Use familiar B2B SaaS patterns (sidebar shell, top header, data tables) — do not reinvent
+- **Miller's Chunking**: Long RFQ tables grouped (header → line items → totals → notes)
+- **Proximity**: Labels tied to controls; status badges next to RFQ titles
+- **Similarity**: One Card primitive everywhere — do not branch into custom card variants
+- **Common region**: Cards group sections; Sidebar groups visually separate nav clusters
+- **Von Restorff**: Accent amber on the single most important CTA per view (e.g. "Enviar a proveedores")
+- **Doherty Threshold (<400ms)**: Optimistic UI on quote-status changes; supplier list filtering must feel instant
 
-### Visual hierarchy
+### Visual hierarchy (CotizaMe context)
 
 ```
 Level 1 (critical):
-  - “Interest saved” numberDisplay 48 green
-  - “Time saved” numberDisplay 48 blue
-  - “Calculate” CTA (even if ornamental today)
+  - Page title (Header H1)
+  - Hero KPI on Dashboard (cotizaciones activas, ahorro acumulado)
+  - Primary CTA (variant=primary OR accent for Send actions)
 
 Level 2 (support):
-  - Card section titles
-  - Table/chart subtitles
+  - Card titles
+  - Section dividers (Sidebar group labels)
   - Form labels
 
 Level 3 (context):
   - Helper text beneath fields
-  - “% less interest”, “Paid off by” analogs
-  - Date metadata rows
+  - Timestamps, supplier counts, status badges
   - Footer disclaimers
 ```
 
 ## Target catalog
 
 Document each component: **states, variants, tokens, a11y, keyboard, snippet**.
-Existing components refactor toward template compliance; gaps created net-new.
+Existing components refactor toward template compliance; gaps created net-new
+under the matching atomic-design folder.
 
-### 1. Button (composed in `shared` + locals)
+### 1. Button (`atoms/button.tsx`)
 
-Currently `btnCalculate`, `btnGhost`, inline (`freqBtn`, `expandBtn`, `tabBtn`). Consolidate:
+Already exists with `variant` (`primary`, `ghost`, `icon`). Audit then formalize:
 
 ```
 Variants:
-  primary    → shared.btnCalculate (secondary solid)
-  ghost      → shared.btnGhost
-  segmented  → freq/tab toggles within a single group
-  inline     → expand/link-like triggers
-Sizes:    sm (32px), md (40px), lg (48px — Calculate)
+  primary    → bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary-hover)]
+  accent     → bg-[var(--accent)] text-[var(--accent-foreground)] hover:bg-[var(--accent-hover)]   (CTA emphasis)
+  ghost      → text-[var(--foreground-muted)] hover:bg-[var(--background-muted)]
+  outline    → border border-[var(--border)] hover:bg-[var(--background-muted)]
+  destructive→ bg-[var(--destructive)] text-white hover:bg-[var(--destructive)]/90
+  link       → text-[var(--primary)] underline-offset-4 hover:underline
+  icon       → square, used for header chrome (Search, Bell)
+Sizes:    sm (32px), md (40px), lg (48px), icon (h-9 w-9)
 States:   default, hover, active, focus-visible, disabled, loading
 
 Rules:
-  - Focus: outline 2px solid var(--color-on-tertiary-container), offset 2px (not shadow-only)
-  - Disabled: opacity .5 + not-allowed
-  - segmented: aria-pressed (already in freq buttons)
-  - Single-line labels
-  - Icon size var(--type-label), gap var(--space-sm)
+  - Focus: rely on `:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }` from globals.css; do not override
+  - Disabled: opacity-50 + cursor-not-allowed (already standard in shadcn/ui)
+  - Icon-only: ALWAYS include `<span className="sr-only">`
+  - Single-line labels by default; allow wrapping only when explicitly requested
+  - Built with `cva` (`class-variance-authority`) and `cn()`
 ```
 
-### 2. Input (`components/Input` + `shared.inputWrapper`)
+### 2. Input + Label (`atoms/{input,label}.tsx`)
 
 Existing anatomy:
-- Visible label (`shared.label`) ✓ — never placeholder-only labeling
-- adornments (`shared.adornment`)
-- transparent field (`shared.inputField`)
-- `sanitize-html` in `Input.tsx` ✓
+- Visible `<Label>` → never placeholder-only labeling
+- Input wrapper border `border-[var(--border)]`, focus ring driven by globals
+- `sanitize-html` is available in deps but should only be invoked when the
+  consumer renders user-derived HTML (RFQ notes preview), not on every input
 
 States to tighten:
-- `:focus-within` border ring (already)
-- Errors: propose `shared.inputWrapperError`, `aria-invalid`
-- Disabled: opacity + cursor
-- Helper `<p className={shared.helperText}>`
-- Error `<p className={shared.errorMessage}>`
+- `:focus-within` ring inherits from `:focus-visible` style — verify in code
+- Errors: introduce `aria-invalid` + `<p role="alert" className="text-sm text-[var(--destructive)]">`
+- Disabled: `disabled:opacity-50 disabled:cursor-not-allowed`
+- Helper: `<p className="text-sm text-[var(--foreground-muted)]">`
 
-### 3. Select (`components/Select`)
+Pair with `react-hook-form` via `register()` + `formState.errors` (no
+`useEffect` for validation — keep render-derived).
 
-Native `<select>` inside `.inputWrapper`. Keep native mobile behavior — no faux select.
+### 3. Card (`molecules/card.tsx`)
 
-Extend:
-- Styled chevron
-- Provide `aria-label` when standalone (e.g. `TopBar` locale select)
+`Card` + `CardHeader` + `CardTitle` + `CardDescription` + `CardContent` + `CardFooter`
+already cover the surface needs. Compose, do not branch:
 
-### 4. Card (`shared.card`, `shared.cardSubtle`)
+- Avoid creating one-off `<DashboardCard>` / `<RfqCard>` — pass content in
+- If clickable, wrap with `<Link>` or `<button>` semantically — do not bolt
+  `cursor: pointer` onto a `<div>`
 
-- `card` — surface lowest (#fff-ish), outline border, lg padding
-- `cardSubtle` — tinted container-low, same geometry
+### 4. Badge (`atoms/badge.tsx`)
 
-Extras:
-- If clickable card: hover + `cursor:pointer` but prefer semantic `<button>` / `<Link>`
+Currently mixes status + semantic + raw Tailwind palette. Reconcile in
+collaboration with Agent 03:
+
+```
+Status variants (drive procurement-specific pills):
+  draft, sent, answered, pending, closed, overdue   → backed by .badge-* in globals.css
+
+Semantic variants (general feedback):
+  default, primary, accent, success, warning, danger → drive from --success/--warning/--destructive (Agent 03 must add container tokens; replace raw bg-emerald-50)
+```
 
 ### 5. Navigation
 
-#### TopBar
-- Logo/wordmark left; locale picker right  
-- Optionally sticky desktop for long tables
+#### Sidebar (`organisms/sidebar.tsx`)
+- Logo block left → swap inline placeholder for `<Logo variant="primary" />`
+- Nav groups already structured; extract config to `front/src/components/organisms/sidebar.config.ts` once routes stabilize
+- Active state: `pathname === href` for `/dashboard`, `pathname.startsWith(href)` for nested
+- Mobile: not implemented — add a collapsible / drawer pattern when shipping mobile
 
-#### BottomNav (mobile)
-- Three calculator/schedule tabs  
-- ⚠ Active state purely local (`useState`) — consider routing sync if deeplinking required
+#### Header (`organisms/header.tsx`)
+- Title + right-aligned `Search` + `Bell` + slot for `action`
+- Wire Search to a `<CommandPalette>` (Cmd-K) future enhancement
+- Bell → swap positional dot for `<NotificationIndicator count={n} />` abstraction
 
-#### Internal tabs (`AmortizationCalculator.tabBar`)
-- Chart/table toggles → add proper `role="tablist"` / `role="tab"` semantics  
-- Optional query param `?view=chart|table` for sharable state
+### 6. Data table (missing — required for Suppliers, History, RFQ comparison)
 
-### 6. Table (`AmortizationTable`)
+Create `molecules/data-table.tsx` (or under `ui/` if leaning on shadcn):
 
-- Headers with `scope="col"` wherever missing  
-- Numeric tabular lining ✓  
-- Optional zebra rows  
-- Export button + `aria-live` feedback  
-- Expand/collapse exposes `aria-expanded`
+- Sticky header row
+- Right-aligned numeric columns with `.tabular-nums`
+- Sort affordances on column headers (`aria-sort`)
+- Empty state slot (`<EmptyState />`)
+- Loading state slot (`<Skeleton />` rows)
+- Action column with icon-only `<Button variant="ghost" size="icon" />`
 
-### 7. Chart (`BalanceChart`)
+### 7. Feedback (still missing architecturally)
 
-Wrapper around ApexCharts. Risks:
-
-- Duplicate meaning via hue only — reinforce line styling (solid vs dashed)  
-- Tooltips/fonts must align tokens (`chart.fontFamily` overrides)  
-- Large Y-axis numbers → Intl abbreviations  
-
-### 8. Feedback (still missing architecturally)
-
-#### Toast/Snackbar
-Use cases: CSV export success/failure, persisted scenario notifications
+#### Toast / Sonner
+Use cases: send RFQ confirmation, supplier added, error toasts.
 
 ```tsx
 type ToastProps = Readonly<{
@@ -202,89 +214,113 @@ type ToastProps = Readonly<{
 }>;
 ```
 
-- `aria-live="polite"` / `"assertive"` for destructive states  
-- Autodismiss but manual close affordance  
+- `aria-live="polite"` / `"assertive"` for destructive states
+- Auto-dismiss but always provide manual close affordance
+- shadcn/ui ships a Sonner-based toast that drops cleanly into `components/ui/`
 
-#### Skeleton — replace blank hydration placeholders  
-#### EmptyState — tables with zero computed rows  
+#### Skeleton
+Replace blank loading placeholders on Dashboard cards, RFQ list, Supplier list.
 
-### 9. Tooltip (evaluate)
+#### EmptyState
+Empty Suppliers, empty History, RFQ comparison with no responses yet.
 
-LoanForm informational icons hover without accessible tooltips yet — keyboard + ESC parity if introduced.
+### 8. Tooltip / Dialog (evaluate as needed)
+
+- `Dialog` — RFQ create wizard, supplier detail drawer
+- `Tooltip` — KPI definitions on Dashboard hover
+- Both should land via shadcn/ui `components/ui/` and be re-exported from a
+  catalog index when the team adopts it.
 
 ## Per-component specs
 
-Every catalog entry archived at `.claude/references/components/<name>.md` with YAML like:
+Every catalog entry archived at `.claude/references/components/<name>.md`
+with YAML like:
 
 ```yaml
 component:
   name: "Button"
-  file: "shared/shared.module.css + localized *.module.css"
+  file: "front/src/components/atoms/button.tsx"
   description: "Interactive control for CTAs"
 
   tokens_used:
-    color: [--color-secondary, --color-on-secondary, --color-on-secondary-container]
-    typography: [--type-body, --weight-semi, --font-headline]
-    spacing: [--space-sm, --space-md]
-    radius: [--radius-card]
+    color: [--primary, --primary-hover, --primary-foreground, --accent, --accent-hover, --accent-foreground, --destructive]
+    typography: [--type-label, --weight-medium, --font-body]
+    radius: [--radius]
 
   states:
-    default: { bg: secondary, fg: on-secondary }
-    hover: { bg: on-secondary-container }
+    default: { bg: primary, fg: primary-foreground }
+    hover: { bg: primary-hover }
     active: { opacity: 0.92 }
-    focus-visible: { outline: "2px solid var(--color-on-tertiary-container)", offset: "2px" }
+    focus-visible: { outline: "2px solid var(--ring)", offset: "2px" }   # from globals.css
     disabled: { opacity: 0.5, cursor: not-allowed }
 
   accessibility:
     role: "button"
     keyboard: "Enter/Space activates"
-    focus_visible: "2px outline"
+    focus_visible: "2px outline (globals.css :focus-visible)"
 
-  variants: [primary, ghost, segmented, inline]
-  sizes: [sm, md, lg]
+  variants: [primary, accent, ghost, outline, destructive, link, icon]
+  sizes: [sm, md, lg, icon]
 ```
 
 ## Accessibility (WCAG 2.1 AA) baseline
 
-1. Contrast thresholds per Agent 03 report  
-2. Visible `:focus-visible` on every interactive widget  
-3. Full keyboard traversal (Tab, Shift+Tab, Enter/Space/Esc as applicable)  
-4. Correct roles/ARIA combos (`aria-pressed`, `aria-expanded`, `aria-invalid`, `aria-busy`, `aria-live`)  
-5. Tables: `scope` attributes where appropriate  
-6. Touch targets ≥ 44×44 on mobile flows  
-7. Honor `prefers-reduced-motion`  
-8. Never rely on hue alone  
+1. Contrast thresholds per Agent 03 report
+2. Visible `:focus-visible` on every interactive widget — already wired via
+   the global `:focus-visible` rule using `--ring` (#0C4A6E)
+3. Full keyboard traversal (Tab, Shift+Tab, Enter/Space/Esc as applicable)
+4. Correct roles/ARIA combos (`aria-pressed`, `aria-expanded`, `aria-invalid`,
+   `aria-busy`, `aria-live`, `aria-sort` on tables)
+5. Tables: `<th scope="col">` + `<th scope="row">` where applicable
+6. Touch targets ≥ 44×44 on mobile flows (Sidebar drawer, RFQ list rows)
+7. Honor `prefers-reduced-motion` — wrap any non-essential transition in a
+   media query (the global `--shadow-*` and Tailwind `transition-colors` are
+   safe defaults)
+8. Never rely on hue alone — Badge variants always pair color with text label
 
 ## Deliverable targets
 
 ```
-components/
-├── Toast/       (future)
-├── Skeleton/    (future)
-├── EmptyState/  (future)
-└── Logo/        (Agent 02 maintains)
-
-shared/shared.module.css → extend helpers: helper text, errors, wrappers
+front/src/components/
+├── atoms/        → audited (button, input, label, badge)
+├── molecules/    → expanded (card, data-table, form-field, empty-state)
+├── organisms/    → audited (sidebar, header) + future (toaster mount, command-palette)
+└── ui/           → shadcn drops (dialog, dropdown-menu, sonner, skeleton, tooltip) when needed
 
 .claude/references/components/
-├── button.md … emptystate.md
+├── button.md, input.md, badge.md, card.md, sidebar.md, header.md
+├── data-table.md, dialog.md, toast.md, skeleton.md, empty-state.md
 ```
 
 Plus master index `.claude/references/component-library.md`.
 
 ## Agent rules
 
-- New/modified components obey `front-dev-patterns` conventions  
-- Interactives MUST show focus-visible outline (shadow alone insufficient)  
-- Reuse shared primitives before local CSS clones  
-- No invented colors/fonts — only `var(--color-*)`, `var(--type-*)`, `var(--space-*)` sourced from Agents 03–06  
-- Refactor questionable `LoanForm` `useEffect`s when aligning with guideline  
-- New icons preferred from `react-icons/hi`; decorative icons `aria-hidden`, icon-only toggles labelled  
+- New/modified components obey `.claude/rules/code-patterns.md` (arrow
+  functions, import order, no `switch`, no `useEffect` for derivation)
+- Interactives MUST resolve to the global `:focus-visible` ring (do not
+  override unless intentional and documented)
+- Reuse existing primitives (`Card`, `Button`, `Badge`) before writing a
+  one-off component
+- Style via Tailwind utilities + `cn()` from `@/lib/utils` — **no SCSS
+  modules, no styled-components**
+- `cva` (`class-variance-authority`) is the convention for variant + size
+  prop maps (see `Badge`)
+- No invented colors/sizes/spacing — only `var(--token)` (or the Tailwind
+  utility that resolves to the token: `bg-primary`, `text-foreground-muted`,
+  `rounded-lg`)
+- Drop new shadcn/ui components into `front/src/components/ui/` (per
+  `components.json` `aliases.ui`), then re-export from the appropriate
+  atomic layer if it makes ergonomic sense
+- New icons preferred from `lucide-react` (`components.json` declares it as
+  primary); `react-icons` only when lucide lacks the glyph; decorative icons
+  marked `aria-hidden`, icon-only triggers labeled with `<span className="sr-only">`
+- Keep components ≤ 250 lines (`code-patterns.md` § File length)
 
 ## Handoff to Agents 06 & 07
 
 Deliver:
-- WCAG AA conformance / Lighthouse audits  
-- Verified removal of rogue literal colors/sizes (`rg '*.module.css'`)  
-- Component reference markdown per module  
-- Spacing interplay table for Agents 06/07
+- WCAG AA conformance / Lighthouse audits
+- Verified removal of stray hex literals across components (`rg` for `#[0-9a-fA-F]{3,6}`)
+- Component reference markdown per module
+- Spacing interplay table (internal padding vs external gap) for Agents 06/07

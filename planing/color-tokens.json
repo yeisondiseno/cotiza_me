@@ -1,0 +1,79 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "meta": {
+    "product": "CotizaMe",
+    "source": "front/src/app/globals.css",
+    "canonicalDoc": "planing/ui-spec.md",
+    "version": "1.0",
+    "date": "2026-06-03"
+  },
+  "color": {
+    "brand": {
+      "primary": { "value": "#0C4A6E" },
+      "accent": { "value": "#F59E0B" }
+    },
+    "background": {
+      "default": { "value": "#F8FAFC" },
+      "card": { "value": "#FFFFFF" },
+      "muted": { "value": "#F1F5F9" }
+    },
+    "foreground": {
+      "default": { "value": "#0F172A" },
+      "muted": { "value": "#64748B" },
+      "faint": { "value": "#94A3B8" }
+    },
+    "primary": {
+      "default": { "value": "#0C4A6E" },
+      "hover": { "value": "#0A3D5C" },
+      "foreground": { "value": "#F0F9FF" }
+    },
+    "accent": {
+      "default": { "value": "#F59E0B" },
+      "hover": { "value": "#D97706" },
+      "foreground": { "value": "#1C1917" }
+    },
+    "semantic": {
+      "success": { "value": "#10B981" },
+      "warning": { "value": "#F59E0B" },
+      "destructive": { "value": "#EF4444" },
+      "info": { "value": "#3B82F6" }
+    },
+    "border": {
+      "default": { "value": "#E2E8F0" },
+      "strong": { "value": "#CBD5E1" }
+    },
+    "ring": { "value": "#0C4A6E" },
+    "status": {
+      "draft": { "bg": "#F1F5F9", "fg": "#64748B", "cssClass": "badge-draft" },
+      "sent": { "bg": "#EFF6FF", "fg": "#1D4ED8", "cssClass": "badge-sent" },
+      "answered": {
+        "bg": "#F0FDF4",
+        "fg": "#15803D",
+        "cssClass": "badge-answered",
+        "domainAlias": "responded"
+      },
+      "pending": {
+        "bg": "#FFFBEB",
+        "fg": "#92400E",
+        "cssClass": "badge-pending"
+      },
+      "closed": {
+        "bg": "#F1F5F9",
+        "fg": "#94A3B8",
+        "cssClass": "badge-closed"
+      },
+      "overdue": {
+        "bg": "#FEF2F2",
+        "fg": "#B91C1C",
+        "cssClass": "badge-overdue",
+        "domainAlias": "expired"
+      },
+      "failed": {
+        "bg": "#FEE2E2",
+        "fg": "#991B1B",
+        "cssClass": "badge-failed",
+        "note": "Promover a globals.css en implementación Agent 03"
+      }
+    }
+  }
+}

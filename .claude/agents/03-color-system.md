@@ -8,7 +8,7 @@ palette is the single source of truth for every pixel color in the product.
 
 ## Dependencies
 
-- **Requires**: `.claude/references/brand-brief.md` (Agent 01) — at least `color_direction`
+- **Requires**: `planing/brand-brief.md` (Agent 01) — at least `color_direction`; spec: `planing/ui-spec.md` §3–4
 - **Optional**: `.claude/references/logo-tokens.json` (Agent 02) — logo colors as anchors
 - **May run in parallel with**: Agent 04 (Typography)
 
@@ -23,60 +23,63 @@ automatically.
 ```css
 :root {
   /* Brand */
-  --brand-primary: #0C4A6E;
-  --brand-accent:  #F59E0B;
+  --brand-primary: #0c4a6e;
+  --brand-accent: #f59e0b;
 
   /* Backgrounds */
-  --background:       #F8FAFC;
-  --background-card:  #FFFFFF;
-  --background-muted: #F1F5F9;
+  --background: #f8fafc;
+  --background-card: #ffffff;
+  --background-muted: #f1f5f9;
 
   /* Foregrounds */
-  --foreground:       #0F172A;
-  --foreground-muted: #64748B;
-  --foreground-faint: #94A3B8;
+  --foreground: #0f172a;
+  --foreground-muted: #64748b;
+  --foreground-faint: #94a3b8;
 
   /* Primary (interactive) */
-  --primary:            #0C4A6E;
-  --primary-hover:      #0A3D5C;
-  --primary-foreground: #F0F9FF;
+  --primary: #0c4a6e;
+  --primary-hover: #0a3d5c;
+  --primary-foreground: #f0f9ff;
 
   /* Accent (CTA / highlight) */
-  --accent:            #F59E0B;
-  --accent-hover:      #D97706;
-  --accent-foreground: #1C1917;
+  --accent: #f59e0b;
+  --accent-hover: #d97706;
+  --accent-foreground: #1c1917;
 
   /* Semantic */
-  --success:     #10B981;
-  --warning:     #F59E0B;
-  --destructive: #EF4444;
-  --info:        #3B82F6;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --destructive: #ef4444;
+  --info: #3b82f6;
 
   /* Borders & shadows */
-  --border:        #E2E8F0;
-  --border-strong: #CBD5E1;
-  --ring:          #0C4A6E;
-  --shadow-sm: ...; --shadow: ...; --shadow-md: ...; --shadow-lg: ...;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --ring: #0c4a6e;
+  --shadow-sm: ...;
+  --shadow: ...;
+  --shadow-md: ...;
+  --shadow-lg: ...;
 }
 
 @theme inline {
-  --color-background:        var(--background);
-  --color-background-card:   var(--background-card);
-  --color-background-muted:  var(--background-muted);
-  --color-foreground:        var(--foreground);
-  --color-foreground-muted:  var(--foreground-muted);
-  --color-foreground-faint:  var(--foreground-faint);
-  --color-primary:            var(--primary);
-  --color-primary-hover:      var(--primary-hover);
+  --color-background: var(--background);
+  --color-background-card: var(--background-card);
+  --color-background-muted: var(--background-muted);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-faint: var(--foreground-faint);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
-  --color-accent:            var(--accent);
-  --color-accent-hover:      var(--accent-hover);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-foreground: var(--accent-foreground);
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-destructive: var(--destructive);
   --color-info: var(--info);
-  --color-border:        var(--border);
+  --color-border: var(--border);
   --color-border-strong: var(--border-strong);
 }
 ```
@@ -107,9 +110,11 @@ automatically.
 ## Theory baseline (always apply)
 
 ### Color attributes
+
 Hue · saturation · lightness · temperature
 
 ### Harmonies
+
 Monochromatic · analogous · complementary · split-complementary · triadic · tetradic
 
 The current CotizaMe palette is a **complementary cool/warm pair**: deep navy
@@ -143,15 +148,15 @@ For each text/bg pair actually used in code:
 
 Minimum sample table:
 
-| Text                                | Background                    | Ratio    | Level    |
-| ----------------------------------- | ----------------------------- | -------- | -------- |
-| `foreground` (#0F172A)              | `background` (#F8FAFC)        | ~16.6:1  | AAA      |
-| `foreground-muted` (#64748B)        | `background-card` (#FFFFFF)   | ~4.7:1   | AA       |
-| `foreground-faint` (#94A3B8)        | `background-card` (#FFFFFF)   | ~2.8:1   | FAIL — only acceptable for ≥18px bold or non-text UI |
-| `primary-foreground` (#F0F9FF)      | `primary` (#0C4A6E)           | ~10.8:1  | AAA      |
-| `accent-foreground` (#1C1917)       | `accent` (#F59E0B)            | ~7.6:1   | AAA      |
-| Sidebar active link (#F0F9FF on #0C4A6E) |                          | ~10.8:1  | AAA      |
-| Border (#E2E8F0) on background (#F8FAFC) |                           | ~1.1:1   | non-text UI: borderline — verify SC 1.4.11 |
+| Text                                     | Background                  | Ratio   | Level                                                |
+| ---------------------------------------- | --------------------------- | ------- | ---------------------------------------------------- |
+| `foreground` (#0F172A)                   | `background` (#F8FAFC)      | ~16.6:1 | AAA                                                  |
+| `foreground-muted` (#64748B)             | `background-card` (#FFFFFF) | ~4.7:1  | AA                                                   |
+| `foreground-faint` (#94A3B8)             | `background-card` (#FFFFFF) | ~2.8:1  | FAIL — only acceptable for ≥18px bold or non-text UI |
+| `primary-foreground` (#F0F9FF)           | `primary` (#0C4A6E)         | ~10.8:1 | AAA                                                  |
+| `accent-foreground` (#1C1917)            | `accent` (#F59E0B)          | ~7.6:1  | AAA                                                  |
+| Sidebar active link (#F0F9FF on #0C4A6E) |                             | ~10.8:1 | AAA                                                  |
+| Border (#E2E8F0) on background (#F8FAFC) |                             | ~1.1:1  | non-text UI: borderline — verify SC 1.4.11           |
 
 Verify **all** pairs — do not assume. Re-run after any token change.
 
@@ -163,16 +168,16 @@ Without breaking shadcn-style roles, normalize state suffixes:
 
 ```css
 /* Primary ramp (already partial) */
---primary-soft:   #1364A2;  /* lighter for ghost-on-primary surfaces */
---primary:        #0C4A6E;  /* base */
---primary-hover:  #0A3D5C;  /* existing */
---primary-active: #082E45;  /* darker pressed state */
+--primary-soft: #1364a2; /* lighter for ghost-on-primary surfaces */
+--primary: #0c4a6e; /* base */
+--primary-hover: #0a3d5c; /* existing */
+--primary-active: #082e45; /* darker pressed state */
 
 /* Accent ramp */
---accent-soft:    #FBBF24;
---accent:         #F59E0B;
---accent-hover:   #D97706;
---accent-active:  #B45309;
+--accent-soft: #fbbf24;
+--accent: #f59e0b;
+--accent-hover: #d97706;
+--accent-active: #b45309;
 ```
 
 (Indicative values — Agent must reconcile with WCAG usage.)
@@ -185,14 +190,18 @@ graduate into named tokens so Agent 05 can drop the raw `bg-emerald-50`
 shortcuts:
 
 ```css
---status-sent-bg:        #EFF6FF;  --status-sent-fg:        #1D4ED8;
---status-answered-bg:    #F0FDF4;  --status-answered-fg:    #15803D;
---status-pending-bg:     #FFFBEB;  --status-pending-fg:     #92400E;
---status-overdue-bg:     #FEF2F2;  --status-overdue-fg:     #B91C1C;
---status-closed-bg:      var(--background-muted);
---status-closed-fg:      var(--foreground-faint);
---status-draft-bg:       var(--background-muted);
---status-draft-fg:       var(--foreground-muted);
+--status-sent-bg: #eff6ff;
+--status-sent-fg: #1d4ed8;
+--status-answered-bg: #f0fdf4;
+--status-answered-fg: #15803d;
+--status-pending-bg: #fffbeb;
+--status-pending-fg: #92400e;
+--status-overdue-bg: #fef2f2;
+--status-overdue-fg: #b91c1c;
+--status-closed-bg: var(--background-muted);
+--status-closed-fg: var(--foreground-faint);
+--status-draft-bg: var(--background-muted);
+--status-draft-fg: var(--foreground-muted);
 ```
 
 Mirror under `@theme inline` if Tailwind utilities (`bg-status-sent`) are
@@ -204,25 +213,25 @@ desired.
 lack `-foreground` and `-container` companions:
 
 ```css
---success:               #10B981;
---success-foreground:    #ECFDF5;
---success-container:     #D1FAE5;
---success-on-container:  #065F46;
+--success: #10b981;
+--success-foreground: #ecfdf5;
+--success-container: #d1fae5;
+--success-on-container: #065f46;
 
---warning:               #F59E0B;   /* aliases --accent intentionally for now */
---warning-foreground:    #1C1917;
---warning-container:     #FEF3C7;
---warning-on-container:  #92400E;
+--warning: #f59e0b; /* aliases --accent intentionally for now */
+--warning-foreground: #1c1917;
+--warning-container: #fef3c7;
+--warning-on-container: #92400e;
 
---destructive:               #EF4444;
---destructive-foreground:    #FFFFFF;
---destructive-container:     #FEE2E2;
---destructive-on-container:  #991B1B;
+--destructive: #ef4444;
+--destructive-foreground: #ffffff;
+--destructive-container: #fee2e2;
+--destructive-on-container: #991b1b;
 
---info:                  #3B82F6;
---info-foreground:       #EFF6FF;
---info-container:        #DBEAFE;
---info-on-container:     #1E40AF;
+--info: #3b82f6;
+--info-foreground: #eff6ff;
+--info-container: #dbeafe;
+--info-on-container: #1e40af;
 ```
 
 **D) Extended ramps (optional)**
@@ -231,7 +240,7 @@ If the product grows (heatmaps in Reports, supplier comparison gradients),
 add 9-stop ramps **in addition** to core role tokens:
 
 ```css
---color-neutral-50: #F8FAFC;
+--color-neutral-50: #f8fafc;
 /* ... neutral-900: #0F172A */
 ```
 
@@ -239,12 +248,12 @@ Only if Agents 05 or 07 need them — avoid palette bloat.
 
 ### Phase 3 — Accessibility validation (non-negotiable)
 
-| Combination              | Min ratio | Standard |
-| ------------------------ | --------- | -------- |
-| Normal text on bg        | 4.5:1     | WCAG AA  |
-| Large text (≥18px bold)  | 3:1       | WCAG AA  |
+| Combination              | Min ratio | Standard            |
+| ------------------------ | --------- | ------------------- |
+| Normal text on bg        | 4.5:1     | WCAG AA             |
+| Large text (≥18px bold)  | 3:1       | WCAG AA             |
 | UI graphical elements    | 3:1       | WCAG AA (SC 1.4.11) |
-| Normal text aspirational | 7:1       | WCAG AAA |
+| Normal text aspirational | 7:1       | WCAG AAA            |
 
 **Color blindness:**
 
@@ -287,37 +296,37 @@ the corresponding `@theme inline` re-mappings:
 
 **B)** Export JSON for Figma/tooling:
 
-`.claude/references/color-tokens.json`
+`planing/color-tokens.json` (sync `.claude/references/color-tokens.json`)
 
 ```json
 {
   "color": {
-    "background":        { "value": "#F8FAFC" },
-    "backgroundCard":    { "value": "#FFFFFF" },
-    "backgroundMuted":   { "value": "#F1F5F9" },
-    "foreground":        { "value": "#0F172A" },
-    "foregroundMuted":   { "value": "#64748B" },
-    "foregroundFaint":   { "value": "#94A3B8" },
-    "primary":           { "value": "#0C4A6E" },
-    "primaryHover":      { "value": "#0A3D5C" },
+    "background": { "value": "#F8FAFC" },
+    "backgroundCard": { "value": "#FFFFFF" },
+    "backgroundMuted": { "value": "#F1F5F9" },
+    "foreground": { "value": "#0F172A" },
+    "foregroundMuted": { "value": "#64748B" },
+    "foregroundFaint": { "value": "#94A3B8" },
+    "primary": { "value": "#0C4A6E" },
+    "primaryHover": { "value": "#0A3D5C" },
     "primaryForeground": { "value": "#F0F9FF" },
-    "accent":            { "value": "#F59E0B" },
-    "accentHover":       { "value": "#D97706" },
-    "accentForeground":  { "value": "#1C1917" },
-    "success":           { "value": "#10B981" },
-    "warning":           { "value": "#F59E0B" },
-    "destructive":       { "value": "#EF4444" },
-    "info":              { "value": "#3B82F6" },
-    "border":            { "value": "#E2E8F0" },
-    "borderStrong":      { "value": "#CBD5E1" },
-    "ring":              { "value": "#0C4A6E" },
+    "accent": { "value": "#F59E0B" },
+    "accentHover": { "value": "#D97706" },
+    "accentForeground": { "value": "#1C1917" },
+    "success": { "value": "#10B981" },
+    "warning": { "value": "#F59E0B" },
+    "destructive": { "value": "#EF4444" },
+    "info": { "value": "#3B82F6" },
+    "border": { "value": "#E2E8F0" },
+    "borderStrong": { "value": "#CBD5E1" },
+    "ring": { "value": "#0C4A6E" },
     "status": {
-      "sent":     { "bg": "#EFF6FF", "fg": "#1D4ED8" },
+      "sent": { "bg": "#EFF6FF", "fg": "#1D4ED8" },
       "answered": { "bg": "#F0FDF4", "fg": "#15803D" },
-      "pending":  { "bg": "#FFFBEB", "fg": "#92400E" },
-      "overdue":  { "bg": "#FEF2F2", "fg": "#B91C1C" },
-      "closed":   { "bg": "#F1F5F9", "fg": "#94A3B8" },
-      "draft":    { "bg": "#F1F5F9", "fg": "#64748B" }
+      "pending": { "bg": "#FFFBEB", "fg": "#92400E" },
+      "overdue": { "bg": "#FEF2F2", "fg": "#B91C1C" },
+      "closed": { "bg": "#F1F5F9", "fg": "#94A3B8" },
+      "draft": { "bg": "#F1F5F9", "fg": "#64748B" }
     }
   }
 }

@@ -1,7 +1,8 @@
 # FLUJO DE USUARIO — CotizaMe
 
-**Arquitectura:** Frontend (React/Next.js) separado del Backend (REST API)
-**Basado en:** `planing/init.md`
+**Arquitectura:** Frontend (React/Next.js) separado del Backend (REST API)  
+**Basado en:** `planing/init.md`  
+**Ver también:** `planing/app-flow.md` (detalle pantallas/API), `planing/brand-brief.md`, `planing/ui-spec.md`, `planing/README.md`
 
 ---
 

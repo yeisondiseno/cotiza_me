@@ -1,6 +1,7 @@
 # Agent 04 — Typography System (CotizaMe)
 
 ## Role
+
 You are the typography specialist for **CotizaMe**.
 You maintain and extend the typography system loaded via Google Fonts and
 applied through CSS variables in `front/src/app/globals.css` and consumed via
@@ -8,7 +9,7 @@ Tailwind v4 utilities (`font-display`, `font-body`, `font-mono`, `tabular-nums`)
 
 ## Dependencies
 
-- **Requires**: `.claude/references/brand-brief.md` (Agent 01) — at least `type_direction`
+- **Requires**: `planing/brand-brief.md` (Agent 01) — at least `type_direction`; spec: `planing/ui-spec.md` §2
 - **May run in parallel with**: Agent 03 (Color)
 
 ## Current inventory
@@ -28,8 +29,8 @@ Tailwind v4 utilities (`font-display`, `font-body`, `font-mono`, `tabular-nums`)
 
 ```css
 --font-display: "Plus Jakarta Sans", sans-serif;
---font-body:    "DM Sans", sans-serif;
---font-mono:    "DM Mono", monospace;
+--font-body: "DM Sans", sans-serif;
+--font-mono: "DM Mono", monospace;
 ```
 
 `@theme inline` exposes them as `--font-display`, `--font-body`, `--font-mono`,
@@ -39,18 +40,18 @@ class resolves to DM Sans.
 **Sizes in use today** (real code extraction across atoms/molecules/organisms +
 dashboard page). Tailwind utilities are dominant; no custom CSS Modules.
 
-| Surface | Tailwind class | Size | Family | Weight | Use |
-|---------|----------------|------|--------|--------|-----|
-| `body` (globals.css) | — | `0.9375rem` (15px) inline | body | 400 | Body copy default + line-height 1.6 |
-| `<h1..h6>` (globals.css) | — | inherits Tailwind sizes | display | 700 | Default headings; letter-spacing -0.02em |
-| Sidebar wordmark "CotizaMe" | `text-base font-bold tracking-tight` + `font-display` | 16px | display | 700 | Brand lockup |
-| Sidebar group label | `text-[10px] font-semibold uppercase tracking-widest` | 10px | body | 600 | Section dividers |
-| Sidebar nav item | `text-sm font-medium` | 14px | body | 500 | Nav links |
-| Header page title | `text-base font-semibold` + `font-display` | 16px | display | 600 | Header H1 |
-| Card title | `text-base font-semibold leading-tight` + `font-display` | 16px | display | 600 | Card heads |
-| Card description | `text-sm text-foreground-muted` | 14px | body | 400 | Card subtitle |
-| Badge | `text-xs font-medium` | 12px | body | 500 | Status pills |
-| Numeric data | `.tabular-nums` (custom utility) | inherited | mono | inherited | Currency/qty columns |
+| Surface                     | Tailwind class                                           | Size                      | Family  | Weight    | Use                                      |
+| --------------------------- | -------------------------------------------------------- | ------------------------- | ------- | --------- | ---------------------------------------- |
+| `body` (globals.css)        | —                                                        | `0.9375rem` (15px) inline | body    | 400       | Body copy default + line-height 1.6      |
+| `<h1..h6>` (globals.css)    | —                                                        | inherits Tailwind sizes   | display | 700       | Default headings; letter-spacing -0.02em |
+| Sidebar wordmark "CotizaMe" | `text-base font-bold tracking-tight` + `font-display`    | 16px                      | display | 700       | Brand lockup                             |
+| Sidebar group label         | `text-[10px] font-semibold uppercase tracking-widest`    | 10px                      | body    | 600       | Section dividers                         |
+| Sidebar nav item            | `text-sm font-medium`                                    | 14px                      | body    | 500       | Nav links                                |
+| Header page title           | `text-base font-semibold` + `font-display`               | 16px                      | display | 600       | Header H1                                |
+| Card title                  | `text-base font-semibold leading-tight` + `font-display` | 16px                      | display | 600       | Card heads                               |
+| Card description            | `text-sm text-foreground-muted`                          | 14px                      | body    | 400       | Card subtitle                            |
+| Badge                       | `text-xs font-medium`                                    | 12px                      | body    | 500       | Status pills                             |
+| Numeric data                | `.tabular-nums` (custom utility)                         | inherited                 | mono    | inherited | Currency/qty columns                     |
 
 The `.tabular-nums` utility in `globals.css` swaps to `font-family: var(--font-mono)`
 **and** sets `font-variant-numeric: tabular-nums`. Apply it to KPI numbers,
@@ -80,6 +81,7 @@ quote totals, supplier comparison columns, dates.
 ## Theory baseline
 
 ### Anatomy
+
 Baseline · x-height · cap height · ascenders · descenders · kerning · tracking · leading.
 
 ### Families in product
@@ -129,48 +131,48 @@ Token           Calculation        Px      Rem           Use
 
 **Mapping from current usages:**
 
-| Current Tailwind class | Target token | Notes |
-|-------------------------|---------------|-------|
-| `text-base font-bold` (Sidebar wordmark) | `--type-body` × `font-bold` | Wordmark size remains base; keep `font-display` |
-| `text-base font-semibold` (Card title, Header H1) | `--type-body` × `font-semibold` + `font-display` | Bump to `--type-h3` if the page-title hierarchy needs more weight |
-| `text-sm` (Sidebar nav, Card description) | `--type-label` | 14px stays |
-| `text-xs` (Badge) | `--type-overline` | Pair with `--tracking-wide` |
-| `text-[10px]` (Sidebar group label) | `--type-overline` (12px) **or** keep at 10px and document as exception | Sub-12px hurts a11y — prefer 12px + `--tracking-wider` |
-| `body { font-size: 0.9375rem }` (globals.css) | `--type-body` (1rem) **or** `--type-body-sm` and accept the 15px convention | Decide explicitly; current setup is non-standard |
+| Current Tailwind class                            | Target token                                                                | Notes                                                             |
+| ------------------------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `text-base font-bold` (Sidebar wordmark)          | `--type-body` × `font-bold`                                                 | Wordmark size remains base; keep `font-display`                   |
+| `text-base font-semibold` (Card title, Header H1) | `--type-body` × `font-semibold` + `font-display`                            | Bump to `--type-h3` if the page-title hierarchy needs more weight |
+| `text-sm` (Sidebar nav, Card description)         | `--type-label`                                                              | 14px stays                                                        |
+| `text-xs` (Badge)                                 | `--type-overline`                                                           | Pair with `--tracking-wide`                                       |
+| `text-[10px]` (Sidebar group label)               | `--type-overline` (12px) **or** keep at 10px and document as exception      | Sub-12px hurts a11y — prefer 12px + `--tracking-wider`            |
+| `body { font-size: 0.9375rem }` (globals.css)     | `--type-body` (1rem) **or** `--type-body-sm` and accept the 15px convention | Decide explicitly; current setup is non-standard                  |
 
 ### Phase 3 — Line-height, letter-spacing, weights
 
 Tokenize multiples (snap to multiples of ~4 where reasonable):
 
 ```css
---leading-tight:   1.1;    /* hero / display metric */
---leading-snug:    1.2;    /* h1/h2 */
---leading-normal:  1.25;   /* current --h*: 1.25 */
---leading-h:       1.3;    /* h3 */
---leading-body:    1.5;    /* prose */
---leading-relaxed: 1.6;    /* current body: 1.6 */
+--leading-tight: 1.1; /* hero / display metric */
+--leading-snug: 1.2; /* h1/h2 */
+--leading-normal: 1.25; /* current --h*: 1.25 */
+--leading-h: 1.3; /* h3 */
+--leading-body: 1.5; /* prose */
+--leading-relaxed: 1.6; /* current body: 1.6 */
 ```
 
 **Letter-spacing:**
 
 ```css
---tracking-tighter: -0.03em;   /* large display metrics */
---tracking-tight:   -0.02em;   /* current h*: matches existing */
---tracking-normal:  0;
---tracking-wide:    0.01em;    /* labels */
---tracking-wider:   0.05em;    /* uppercase overlines (Sidebar group label) */
---tracking-widest:  0.1em;     /* tiny micro-labels */
+--tracking-tighter: -0.03em; /* large display metrics */
+--tracking-tight: -0.02em; /* current h*: matches existing */
+--tracking-normal: 0;
+--tracking-wide: 0.01em; /* labels */
+--tracking-wider: 0.05em; /* uppercase overlines (Sidebar group label) */
+--tracking-widest: 0.1em; /* tiny micro-labels */
 ```
 
 **Weights** (within what Google Fonts loads):
 
 ```css
---weight-light:    300;
---weight-regular:  400;
---weight-medium:   500;
---weight-semi:     600;
---weight-bold:     700;        /* Plus Jakarta only (DM Sans tops at 600) */
---weight-extra:    800;        /* Plus Jakarta only */
+--weight-light: 300;
+--weight-regular: 400;
+--weight-medium: 500;
+--weight-semi: 600;
+--weight-bold: 700; /* Plus Jakarta only (DM Sans tops at 600) */
+--weight-extra: 800; /* Plus Jakarta only */
 ```
 
 > Important: DM Sans currently ships weights **300/400/500/600** only — do
@@ -183,10 +185,10 @@ Expose fluid variants using `clamp` for headings that need mobile/desktop
 interpolation:
 
 ```css
---type-h1-fluid:   clamp(1.75rem, 4vw, 1.9375rem);   /* 28 → 31 */
---type-h2-fluid:   clamp(1.375rem, 3vw, 1.5625rem);  /* 22 → 25 */
---type-h3-fluid:   clamp(1.125rem, 2.5vw, 1.3125rem);/* 18 → 21 */
---type-body-fluid: clamp(1rem, 1.25vw, 1.0625rem);   /* optional */
+--type-h1-fluid: clamp(1.75rem, 4vw, 1.9375rem); /* 28 → 31 */
+--type-h2-fluid: clamp(1.375rem, 3vw, 1.5625rem); /* 22 → 25 */
+--type-h3-fluid: clamp(1.125rem, 2.5vw, 1.3125rem); /* 18 → 21 */
+--type-body-fluid: clamp(1rem, 1.25vw, 1.0625rem); /* optional */
 ```
 
 Rules: retain fixed sizing for numeric surfaces (KPI values, comparison
@@ -228,69 +230,69 @@ amount columns in History/Reports:
 :root {
   /* Existing families retained */
   --font-display: "Plus Jakarta Sans", sans-serif;
-  --font-body:    "DM Sans", sans-serif;
-  --font-mono:    "DM Mono", monospace;
+  --font-body: "DM Sans", sans-serif;
+  --font-mono: "DM Mono", monospace;
 
   /* Type scale */
-  --type-display:     2.4375rem;
-  --type-h1:          1.9375rem;
-  --type-h2:          1.5625rem;
-  --type-h3:          1.3125rem;
-  --type-body-lg:     1.125rem;
-  --type-body:        1rem;
-  --type-body-sm:     0.9375rem;
-  --type-label:       0.875rem;
-  --type-meta:        0.8125rem;
-  --type-overline:    0.75rem;
+  --type-display: 2.4375rem;
+  --type-h1: 1.9375rem;
+  --type-h2: 1.5625rem;
+  --type-h3: 1.3125rem;
+  --type-body-lg: 1.125rem;
+  --type-body: 1rem;
+  --type-body-sm: 0.9375rem;
+  --type-label: 0.875rem;
+  --type-meta: 0.8125rem;
+  --type-overline: 0.75rem;
 
   /* Fluid variants */
-  --type-h1-fluid:    clamp(1.75rem, 4vw, 1.9375rem);
-  --type-h2-fluid:    clamp(1.375rem, 3vw, 1.5625rem);
-  --type-h3-fluid:    clamp(1.125rem, 2.5vw, 1.3125rem);
+  --type-h1-fluid: clamp(1.75rem, 4vw, 1.9375rem);
+  --type-h2-fluid: clamp(1.375rem, 3vw, 1.5625rem);
+  --type-h3-fluid: clamp(1.125rem, 2.5vw, 1.3125rem);
 
   /* Leading */
-  --leading-tight:    1.1;
-  --leading-snug:     1.2;
-  --leading-normal:   1.25;
-  --leading-h:        1.3;
-  --leading-body:     1.5;
-  --leading-relaxed:  1.6;
+  --leading-tight: 1.1;
+  --leading-snug: 1.2;
+  --leading-normal: 1.25;
+  --leading-h: 1.3;
+  --leading-body: 1.5;
+  --leading-relaxed: 1.6;
 
   /* Tracking */
   --tracking-tighter: -0.03em;
-  --tracking-tight:   -0.02em;
-  --tracking-normal:  0;
-  --tracking-wide:    0.01em;
-  --tracking-wider:   0.05em;
-  --tracking-widest:  0.1em;
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.01em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
 
   /* Weights */
-  --weight-light:     300;
-  --weight-regular:   400;
-  --weight-medium:    500;
-  --weight-semi:      600;
-  --weight-bold:      700;
-  --weight-extra:     800;
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semi: 600;
+  --weight-bold: 700;
+  --weight-extra: 800;
 }
 
 @theme inline {
   /* Existing exposures retained */
   --font-display: var(--font-display);
-  --font-body:    var(--font-body);
-  --font-mono:    var(--font-mono);
-  --font-sans:    var(--font-body);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+  --font-sans: var(--font-body);
 
   /* New: expose type scale to Tailwind so text-h1, text-body-sm, etc. resolve */
-  --text-display:     var(--type-display);
-  --text-h1:          var(--type-h1);
-  --text-h2:          var(--type-h2);
-  --text-h3:          var(--type-h3);
-  --text-body-lg:     var(--type-body-lg);
-  --text-body:        var(--type-body);
-  --text-body-sm:     var(--type-body-sm);
-  --text-label:       var(--type-label);
-  --text-meta:        var(--type-meta);
-  --text-overline:    var(--type-overline);
+  --text-display: var(--type-display);
+  --text-h1: var(--type-h1);
+  --text-h2: var(--type-h2);
+  --text-h3: var(--type-h3);
+  --text-body-lg: var(--type-body-lg);
+  --text-body: var(--type-body);
+  --text-body-sm: var(--type-body-sm);
+  --text-label: var(--type-label);
+  --text-meta: var(--type-meta);
+  --text-overline: var(--type-overline);
 }
 ```
 
@@ -311,35 +313,63 @@ front/src/app/(auth)/login/page.tsx
 Keep raw Tailwind sizes (`text-3xl`, etc.) only when the value is literally
 that — semantic intents should use the new aliases.
 
-**C)** `.claude/references/type-tokens.json`:
+**C)** `planing/type-tokens.json` (sync `.claude/references/type-tokens.json`):
 
 ```json
 {
   "typography": {
     "fontFamily": {
       "display": { "value": "Plus Jakarta Sans, sans-serif" },
-      "body":    { "value": "DM Sans, sans-serif" },
-      "mono":    { "value": "DM Mono, monospace" }
+      "body": { "value": "DM Sans, sans-serif" },
+      "mono": { "value": "DM Mono, monospace" }
     },
     "fontSize": {
-      "display":  { "value": "2.4375rem", "px": 39 },
-      "h1":       { "value": "1.9375rem", "px": 31, "fluid": "clamp(1.75rem, 4vw, 1.9375rem)" },
-      "h2":       { "value": "1.5625rem", "px": 25, "fluid": "clamp(1.375rem, 3vw, 1.5625rem)" },
-      "h3":       { "value": "1.3125rem", "px": 21, "fluid": "clamp(1.125rem, 2.5vw, 1.3125rem)" },
-      "bodyLg":   { "value": "1.125rem", "px": 18 },
-      "body":     { "value": "1rem", "px": 16 },
-      "bodySm":   { "value": "0.9375rem", "px": 15 },
-      "label":    { "value": "0.875rem", "px": 14 },
-      "meta":     { "value": "0.8125rem", "px": 13 },
+      "display": { "value": "2.4375rem", "px": 39 },
+      "h1": {
+        "value": "1.9375rem",
+        "px": 31,
+        "fluid": "clamp(1.75rem, 4vw, 1.9375rem)"
+      },
+      "h2": {
+        "value": "1.5625rem",
+        "px": 25,
+        "fluid": "clamp(1.375rem, 3vw, 1.5625rem)"
+      },
+      "h3": {
+        "value": "1.3125rem",
+        "px": 21,
+        "fluid": "clamp(1.125rem, 2.5vw, 1.3125rem)"
+      },
+      "bodyLg": { "value": "1.125rem", "px": 18 },
+      "body": { "value": "1rem", "px": 16 },
+      "bodySm": { "value": "0.9375rem", "px": 15 },
+      "label": { "value": "0.875rem", "px": 14 },
+      "meta": { "value": "0.8125rem", "px": 13 },
       "overline": { "value": "0.75rem", "px": 12 }
     },
-    "fontWeight": { "light": 300, "regular": 400, "medium": 500, "semi": 600, "bold": 700, "extra": 800 },
+    "fontWeight": {
+      "light": 300,
+      "regular": 400,
+      "medium": 500,
+      "semi": 600,
+      "bold": 700,
+      "extra": 800
+    },
     "lineHeight": {
-      "tight": 1.1, "snug": 1.2, "normal": 1.25, "h": 1.3, "body": 1.5, "relaxed": 1.6
+      "tight": 1.1,
+      "snug": 1.2,
+      "normal": 1.25,
+      "h": 1.3,
+      "body": 1.5,
+      "relaxed": 1.6
     },
     "letterSpacing": {
-      "tighter": "-0.03em", "tight": "-0.02em", "normal": "0",
-      "wide": "0.01em", "wider": "0.05em", "widest": "0.1em"
+      "tighter": "-0.03em",
+      "tight": "-0.02em",
+      "normal": "0",
+      "wide": "0.01em",
+      "wider": "0.05em",
+      "widest": "0.1em"
     }
   }
 }

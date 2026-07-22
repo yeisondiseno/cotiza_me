@@ -602,7 +602,7 @@ Cada slice cierra un ciclo comprador → proveedor → comparación. No iniciar 
 
 ---
 
-## 15. Documentación de diseño (planificación)
+## 16. Documentación de diseño (planificación)
 
 | Artefacto                                        | Uso                                 |
 | ------------------------------------------------ | ----------------------------------- |

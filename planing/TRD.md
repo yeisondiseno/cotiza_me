@@ -282,7 +282,9 @@ CREATE TABLE rfqs (
   channel     VARCHAR(20) NOT NULL DEFAULT 'email',  -- email | whatsapp
   currency    VARCHAR(3) NOT NULL DEFAULT 'COP',
   status      VARCHAR(20) NOT NULL DEFAULT 'draft',  -- draft | sent | closed | expired
-  winner_id   UUID REFERENCES suppliers(id),         -- proveedor seleccionado
+  winner_id           UUID REFERENCES suppliers(id), -- proveedor seleccionado
+  winner_selected_by  UUID REFERENCES users(id),     -- quién eligió (auditoría)
+  winner_selected_at  TIMESTAMPTZ,                    -- cuándo se eligió (auditoría)
   sent_at     TIMESTAMPTZ,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),

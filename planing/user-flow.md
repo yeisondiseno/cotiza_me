@@ -357,155 +357,17 @@ Eventos que generan notificaciones:
 
 ---
 
-## Resumen de Pantallas Frontend
+## Catálogos canónicos (no duplicar aquí)
 
-### Públicas (sin auth)
+Para evitar deriva, los listados completos y versionados viven en sus dueños
+únicos (ver `README.md` → *Fuente única de verdad*):
 
-| Ruta                      | Descripción                    |
-| ------------------------- | ------------------------------ |
-| `/`                       | Landing page                   |
-| `/login`                  | Login                          |
-| `/register`               | Registro                       |
-| `/forgot-password`        | Recuperar contraseña           |
-| `/reset-password`         | Reset con token                |
-| `/respond/:token`         | Formulario respuesta proveedor |
-| `/respond/:token/success` | Confirmación respuesta         |
+| Catálogo                          | Fuente canónica                          |
+| --------------------------------- | ---------------------------------------- |
+| Pantallas / rutas frontend        | `PRD.md` §9                              |
+| Endpoints API (con prefijo `/api/v1`) | `PRD.md` §10 · contratos en `TRD.md` §5 |
+| Alcance MVP por flujo             | `PRD.md` §6 (columna MVP) y §11          |
+| Orden de construcción / tareas    | `implementation-plan.md`                 |
 
-### Privadas (requieren auth)
-
-| Ruta                  | Descripción                              |
-| --------------------- | ---------------------------------------- |
-| `/dashboard`          | Dashboard principal                      |
-| `/rfq`                | Lista de solicitudes                     |
-| `/rfq/new`            | Crear nueva solicitud (wizard)           |
-| `/rfq/:id`            | Detalle de solicitud + estado respuestas |
-| `/rfq/:id/compare`    | Comparador de cotizaciones               |
-| `/suppliers`          | Lista de proveedores                     |
-| `/suppliers/:id`      | Detalle de proveedor                     |
-| `/history`            | Historial de cotizaciones                |
-| `/reports`            | Reportes y analytics (Business+)         |
-| `/settings/company`   | Config de empresa                        |
-| `/settings/team`      | Gestión de usuarios                      |
-| `/settings/templates` | Plantillas de mensajes                   |
-| `/settings/billing`   | Plan y facturación                       |
-| `/onboarding/plan`    | Selección de plan (post-registro)        |
-| `/onboarding/setup`   | Setup inicial de empresa                 |
-
----
-
-## Resumen de Endpoints Backend
-
-### Auth
-
-```
-POST   /api/auth/register
-POST   /api/auth/login
-POST   /api/auth/logout
-POST   /api/auth/forgot-password
-POST   /api/auth/reset-password
-GET    /api/auth/me
-```
-
-### Companies
-
-```
-GET    /api/companies/:id
-PATCH  /api/companies/:id
-GET    /api/companies/:id/members
-POST   /api/companies/:id/members/invite
-DELETE /api/companies/:id/members/:userId
-```
-
-### Suppliers
-
-```
-GET    /api/suppliers
-POST   /api/suppliers
-GET    /api/suppliers/:id
-PATCH  /api/suppliers/:id
-DELETE /api/suppliers/:id
-POST   /api/suppliers/import
-```
-
-### RFQ (Request for Quotation)
-
-```
-GET    /api/rfq
-POST   /api/rfq
-GET    /api/rfq/:id
-PATCH  /api/rfq/:id
-DELETE /api/rfq/:id
-POST   /api/rfq/:id/send
-POST   /api/rfq/:id/remind
-GET    /api/rfq/:id/compare
-GET    /api/rfq/:id/export
-```
-
-### Responses
-
-```
-GET    /api/rfq/:id/responses
-POST   /api/rfq/:id/responses          (captura manual)
-POST   /api/rfq/:id/responses/ai-extract (plan Business+)
-```
-
-### Respond (público — token)
-
-```
-GET    /api/respond/:token/validate
-POST   /api/respond/:token/submit
-```
-
-### Templates
-
-```
-GET    /api/templates
-POST   /api/templates
-PATCH  /api/templates/:id
-DELETE /api/templates/:id
-```
-
-### Billing
-
-```
-GET    /api/billing/subscription
-POST   /api/billing/select-plan
-POST   /api/billing/upgrade
-GET    /api/billing/invoices
-```
-
-### Dashboard & Reports
-
-```
-GET    /api/dashboard/summary
-GET    /api/reports/summary
-GET    /api/reports/suppliers/:id
-```
-
-### Notifications
-
-```
-GET    /api/notifications
-PATCH  /api/notifications/:id/read
-PATCH  /api/notifications/read-all
-```
-
----
-
-## MVP — Alcance Mínimo (Meses 1-3)
-
-Flujos a implementar en v1:
-
-| Flujo                          | Frontend     | Backend |
-| ------------------------------ | ------------ | ------- |
-| Registro + Login               | ✅           | ✅      |
-| Onboarding básico              | ✅           | ✅      |
-| CRUD Proveedores               | ✅           | ✅      |
-| Crear RFQ (wizard)             | ✅           | ✅      |
-| Envío por email                | —            | ✅      |
-| Formulario respuesta proveedor | ✅ (público) | ✅      |
-| Captura manual                 | ✅           | ✅      |
-| Comparador básico              | ✅           | ✅      |
-| Dashboard básico               | ✅           | ✅      |
-
-**Fuera del MVP:** WhatsApp, IA, reportes avanzados, importar CSV, multi-usuario, billing real.
+> Los diagramas de flujo de arriba son **de alto nivel** e ilustrativos; usan
+> `/api/...` por brevedad. El prefijo real es **`/api/v1/...`**.
